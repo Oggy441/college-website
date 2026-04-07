@@ -1,67 +1,68 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import PageHeader from '../../components/common/PageHeader';
-import { demoAnnouncements } from '../../data/demoData';
+import { useAnnouncements } from '../../hooks/useFirestore';
+import { useAuth } from '../../context/AuthContext';
+import { addAnnouncement } from '../../firebase/firestore';
+import toast from 'react-hot-toast';
+import { HiOutlineMegaphone, HiOutlinePlusCircle } from 'react-icons/hi2';
 
-const Announcements = () => {
- const [filter, setFilter] = useState('all');
- const announcements = demoAnnouncements.filter(a => filter === 'all' || a.targetRole === filter || a.targetRole === 'all');
+const StudentAnnouncements = () => {
+  const { data: announcements, loading } = useAnnouncements();
+  const { user } = useAuth();
 
- return (
-  <div className="animate-fade-in" style={{ padding: '24px 28px' }}>
-   <PageHeader title="Announcements" subtitle="Stay updated with the latest college news" />
+  const formatDate = (ts) => {
+    try {
+      if (ts?.toDate) return ts.toDate().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+      if (ts instanceof Date) return ts.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+      return 'Recently';
+    } catch {
+      return 'Recently';
+    }
+  };
 
-   {/* Filters */}
-   <div style={{ display: 'flex', gap: '8px', marginBottom: '20px' }}>
-    {['all', 'student', 'teacher'].map((f) => (
-     <button
-      key={f}
-      onClick={() => setFilter(f)}
-      style={{
-       padding: '8px 16px',
-       borderRadius: '8px',
-       border: filter === f ? '1px solid #9B8EC7' : '1px solid rgba(var(--border-rgb), 0.3)',
-       background: filter === f ? 'rgba(99, 102, 241, 0.15)' : 'transparent',
-       color: filter === f ? '#BDA6CE' : 'var(--text-secondary)',
-       fontSize: '0.8rem',
-       fontWeight: 600,
-       cursor: 'pointer',
-       textTransform: 'capitalize',
-       transition: 'all 0.2s ease',
-      }}
-     >
-      {f === 'all' ? 'All' : `${f}s Only`}
-     </button>
-    ))}
-   </div>
+  return (
+    <div className="animate-fade-in" style={{ padding: '24px 28px' }}>
+      <PageHeader title="Announcements" subtitle="Stay updated with the latest college news" />
 
-   <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-    {announcements.map((a, i) => (
-     <div
-      key={a.id}
-      className="glass-card glass-card-hover"
-      style={{
-       padding: '20px 24px',
-       animationDelay: `${i * 0.05}s`,
-      }}
-     >
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
-       <h3 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)' }}>{a.title}</h3>
-       <span className={`badge ${a.targetRole === 'all' ? 'badge-info' : a.targetRole === 'student' ? 'badge-success' : 'badge-warning'}`}>
-        {a.targetRole === 'all' ? 'Everyone' : a.targetRole}
-       </span>
+      {loading && (
+        <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
+          Loading announcements...
+        </div>
+      )}
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+        {!loading && announcements.length === 0 && (
+          <div className="glass-card" style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)' }}>
+            <HiOutlineMegaphone size={40} style={{ marginBottom: '12px', opacity: 0.4 }} />
+            <p>No announcements yet.</p>
+          </div>
+        )}
+
+        {announcements.map((a) => (
+          <div key={a.id} className="glass-card glass-card-hover" style={{
+            padding: '20px 24px',
+            borderLeft: `3px solid ${a.targetRole === 'student' ? '#9B8EC7' : a.targetRole === 'teacher' ? '#B4D3D9' : '#7EC8A0'}`,
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
+              <h3 style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--text-primary)' }}>{a.title}</h3>
+              <div style={{ display: 'flex', gap: '6px', flexShrink: 0, marginLeft: '12px' }}>
+                <span className={`badge ${a.targetRole === 'all' ? 'badge-success' : 'badge-info'}`}>
+                  {a.targetRole === 'all' ? 'Everyone' : a.targetRole}
+                </span>
+              </div>
+            </div>
+            <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: '10px' }}>
+              {a.body}
+            </p>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+              <span>Posted by: {a.postedBy}</span>
+              <span>{formatDate(a.createdAt)}</span>
+            </div>
+          </div>
+        ))}
       </div>
-      <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: '10px' }}>
-       {a.body}
-      </p>
-      <div style={{ display: 'flex', gap: '12px', fontSize: '0.7rem', color: '#5e554d' }}>
-       <span> Posted by: {a.postedBy}</span>
-       <span> {a.createdAt?.toDate?.()?.toLocaleDateString() || 'Recently'}</span>
-      </div>
-     </div>
-    ))}
-   </div>
-  </div>
- );
+    </div>
+  );
 };
 
-export default Announcements;
+export default StudentAnnouncements;
