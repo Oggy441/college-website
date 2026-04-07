@@ -3,29 +3,30 @@
  * Runs once: checks if 'students' collection is empty, and if so, calls seedDatabase().
  */
 import { useEffect, useState } from 'react';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, limit, query } from 'firebase/firestore';
 import { db } from '../firebase/config';
 import { seedDatabase } from '../firebase/seed';
-import { useAuth } from '../context/AuthContext';
-
-const isDemo = (uid) => uid && uid.startsWith('demo-');
 
 const useAutoSeed = () => {
-  const { user } = useAuth();
   const [seeding, setSeeding] = useState(false);
   const [seeded, setSeeded] = useState(false);
 
   useEffect(() => {
-    if (!user || isDemo(user.uid) || seeded) return;
+    if (seeded || seeding) return;
 
     const checkAndSeed = async () => {
       try {
-        const snap = await getDocs(collection(db, 'students'));
+        setSeeding(true);
+        // Check if database is empty quickly via a limited query
+        const q = query(collection(db, 'students'), limit(1));
+        const snap = await getDocs(q);
+        
         if (snap.empty) {
-          console.log('[AutoSeed] Database is empty — seeding...');
-          setSeeding(true);
+          console.log('[AutoSeed] Database is empty — seeding automatically...');
           await seedDatabase();
-          console.log('[AutoSeed] Done!');
+          console.log('[AutoSeed] Done! You can now log in.');
+        } else {
+          console.log('[AutoSeed] Database is already populated. Skipping.');
         }
       } catch (err) {
         console.warn('[AutoSeed] Error:', err.message);
@@ -36,7 +37,7 @@ const useAutoSeed = () => {
     };
 
     checkAndSeed();
-  }, [user, seeded]);
+  }, [seeded, seeding]);
 
   return { seeding };
 };

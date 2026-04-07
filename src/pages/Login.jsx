@@ -1,9 +1,10 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { loginUser } from '../firebase/auth';
 import { HiOutlineAcademicCap, HiOutlineUserCircle, HiOutlineBriefcase, HiOutlineShieldCheck } from 'react-icons/hi2';
 import toast from 'react-hot-toast';
+import useAutoSeed from '../hooks/useAutoSeed';
 
 const roles = [
  { key: 'student', label: 'Student', icon: HiOutlineUserCircle, color: '#9B8EC7', gradient: 'linear-gradient(135deg, #9B8EC7, #8577B5)' },
@@ -24,6 +25,7 @@ const Login = () => {
  const [loading, setLoading] = useState(false);
  const navigate = useNavigate();
  const { demoLogin } = useAuth();
+ const { seeding } = useAutoSeed();
 
  const handleRoleChange = (role) => {
   setSelectedRole(role);
@@ -38,11 +40,8 @@ const Login = () => {
    toast.success(`Welcome, ${user.name}!`);
    navigate(`/${user.role}/dashboard`);
   } catch (err) {
-   console.warn('Firebase login failed, using demo mode:', err.message);
-   // Use demo login as fallback
-   demoLogin(selectedRole);
-   toast.success(`Demo mode — Welcome as ${selectedRole}!`);
-   navigate(`/${selectedRole}/dashboard`);
+   console.error('Firebase login failed:', err);
+   toast.error('Login failed: ' + err.message);
   } finally {
    setLoading(false);
   }
@@ -203,7 +202,7 @@ const Login = () => {
       <button
        id="login-submit"
        type="submit"
-       disabled={loading}
+       disabled={loading || seeding}
        style={{
         width: '100%',
         padding: '12px',
@@ -213,13 +212,13 @@ const Login = () => {
         color: 'white',
         fontSize: '0.9rem',
         fontWeight: 700,
-        cursor: loading ? 'not-allowed' : 'pointer',
-        opacity: loading ? 0.7 : 1,
+        cursor: loading || seeding ? 'not-allowed' : 'pointer',
+        opacity: loading || seeding ? 0.7 : 1,
         transition: 'all 0.2s ease',
         boxShadow: `0 4px 15px ${activeRole.color}33`,
        }}
       >
-       {loading ? 'Signing in...' : `Sign in as ${activeRole.label}`}
+       {(loading || seeding) ? 'Please wait...' : `Sign in as ${activeRole.label}`}
       </button>
      </form>
 
@@ -270,9 +269,17 @@ const Login = () => {
     </div>
 
     {/* Footer */}
-    <p style={{ textAlign: 'center', fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '20px' }}>
-     Demo credentials: student / teacher / admin @college.edu • Test@1234
-    </p>
+    <div style={{ textAlign: 'center', marginTop: '20px' }}>
+     <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '8px' }}>
+      Default credentials: student / teacher / admin @college.edu • Test@1234
+     </p>
+     {seeding && (
+      <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: '0.75rem', color: '#7EC8A0', background: 'rgba(126, 200, 160, 0.1)', padding: '6px 12px', borderRadius: '12px' }}>
+        <div className="spinner" style={{ width: '12px', height: '12px', borderColor: 'rgba(126, 200, 160, 0.3)', borderTopColor: '#7EC8A0' }} />
+        Provisioning database...
+      </div>
+     )}
+    </div>
    </div>
   </div>
  );
