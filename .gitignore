@@ -43,3 +43,6 @@ tmp*.js
 
 # unwanted files
 CollegeMS_BuildPlan.md
+ENV_SETUP.md
+
+# Config files with secrets
