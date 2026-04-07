@@ -1,10 +1,14 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import PageHeader from '../../components/common/PageHeader';
-import { demoStudents, demoSubjects } from '../../data/demoData';
+import { useStudents, useMySubjects } from '../../hooks/useFirestore';
+import { saveAttendance } from '../../firebase/firestore';
+import { useAuth } from '../../context/AuthContext';
 import toast from 'react-hot-toast';
 
 const MarkAttendance = () => {
- const subjects = demoSubjects.filter(s => s.teacherId === 'demo-teacher');
+ const { user } = useAuth();
+ const { data: students } = useStudents();
+ const { data: subjects } = useMySubjects();
  const [selectedSubject, setSelectedSubject] = useState('');
  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
  const [selectedSection, setSelectedSection] = useState('A');
@@ -12,7 +16,7 @@ const MarkAttendance = () => {
  const [entries, setEntries] = useState([]);
 
  const loadStudents = () => {
-  const sectionStudents = demoStudents.filter(s => s.section === selectedSection);
+  const sectionStudents = students.filter(s => s.section === selectedSection);
   setEntries(sectionStudents.map(s => ({
    studentId: s.id,
    name: s.name,
@@ -32,13 +36,17 @@ const MarkAttendance = () => {
   toast.success('All students marked present');
  };
 
- const handleSubmit = () => {
+ const handleSubmit = async () => {
   if (!selectedSubject) {
    toast.error('Please select a subject');
    return;
   }
-  toast.success(`Attendance saved for ${selectedDate}`);
-  console.log('Attendance submitted:', { subject: selectedSubject, date: selectedDate, entries });
+  try {
+   await saveAttendance(selectedSubject, selectedDate, user?.uid, entries);
+   toast.success(`Attendance saved for ${selectedDate}`);
+  } catch (err) {
+   toast.error('Failed to save attendance: ' + err.message);
+  }
  };
 
  const counts = {

@@ -1,10 +1,13 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import PageHeader from '../../components/common/PageHeader';
-import { demoStudents, demoSubjects, calculateGrade, calculateResult } from '../../data/demoData';
+import { useStudents, useMySubjects } from '../../hooks/useFirestore';
+import { saveResults } from '../../firebase/firestore';
+import { calculateGrade, calculateResult } from '../../data/demoData'; // retain for grade logic
 import toast from 'react-hot-toast';
 
 const UploadResults = () => {
- const subjects = demoSubjects.filter(s => s.teacherId === 'demo-teacher');
+ const { data: students } = useStudents();
+ const { data: subjects } = useMySubjects();
  const [selectedSubject, setSelectedSubject] = useState('');
  const [examType, setExamType] = useState('Mid-Term');
  const [maxMarks, setMaxMarks] = useState(100);
@@ -13,7 +16,7 @@ const UploadResults = () => {
  const [loaded, setLoaded] = useState(false);
 
  const loadStudents = () => {
-  const sectionStudents = demoStudents.filter(s => s.section === 'A');
+  const sectionStudents = students.filter(s => s.section === 'A');
   setEntries(sectionStudents.map(s => ({
    studentId: s.id,
    name: s.name,
@@ -38,7 +41,7 @@ const UploadResults = () => {
  const highest = filledEntries.length > 0 ? Math.max(...filledEntries.map(e => parseInt(e.marks))) : 0;
  const lowest = filledEntries.length > 0 ? Math.min(...filledEntries.map(e => parseInt(e.marks))) : 0;
 
- const handlePublish = () => {
+ const handlePublish = async () => {
   if (!selectedSubject) {
    toast.error('Please select a subject');
    return;
@@ -47,8 +50,14 @@ const UploadResults = () => {
    toast.error('Please enter marks for at least one student');
    return;
   }
-  toast.success('Results published successfully!');
-  console.log('Results:', { subject: selectedSubject, examType, maxMarks, passMarks, entries: filledEntries });
+  try {
+   await saveResults(selectedSubject, examType.toLowerCase().replace(' ', '-'), {
+    examType, maxMarks, passMarks, entries: filledEntries
+   });
+   toast.success('Results published successfully!');
+  } catch (err) {
+   toast.error('Failed to publish results: ' + err.message);
+  }
  };
 
  return (
