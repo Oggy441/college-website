@@ -63,7 +63,7 @@ const StudentDashboard = () => {
   return (
     <div className="animate-fade-in" style={{ padding: '24px 28px' }}>
       <PageHeader
-        title={`Welcome back, ${user?.name?.split(' ')[0] || 'Student'}! 👋`}
+        title={`Welcome back, ${user?.name?.split(' ')[0] || 'Student'}! `}
         subtitle="Here's your academic overview"
       />
 
@@ -84,7 +84,7 @@ const StudentDashboard = () => {
         {/* Attendance Chart */}
         <div className="glass-card" style={{ padding: '20px 24px' }}>
           <h3 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '20px' }}>
-            📊 Subject-wise Attendance
+             Subject-wise Attendance
           </h3>
           <div style={{ height: '250px' }}>
             <ResponsiveContainer width="100%" height="100%">
@@ -106,7 +106,7 @@ const StudentDashboard = () => {
         {/* Recent Results */}
         <div className="glass-card" style={{ padding: '20px 24px' }}>
           <h3 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '16px' }}>
-            🎓 Recent Results
+             Recent Results
           </h3>
           <table className="data-table">
             <thead>
@@ -141,7 +141,7 @@ const StudentDashboard = () => {
         {/* Today's Timetable */}
         <div className="glass-card" style={{ padding: '20px 24px' }}>
           <h3 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '16px' }}>
-            📅 Today's Schedule — {dayNames[today.getDay()]}
+             Today's Schedule — {dayNames[today.getDay()]}
           </h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             {todayClasses.map((slot, i) => (

@@ -58,7 +58,7 @@ const Attendance = () => {
 
       {/* Summary */}
       <div className="glass-card" style={{ padding: '20px 24px', marginTop: '20px' }}>
-        <h3 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '12px' }}>📋 Attendance Policy</h3>
+        <h3 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '12px' }}> Attendance Policy</h3>
         <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
           {[
             { color: '#7EC8A0', label: '≥ 85% — Good Standing' },

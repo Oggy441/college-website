@@ -46,7 +46,7 @@ const AdminDashboard = () => {
         {/* Dept Attendance Chart */}
         <div className="glass-card" style={{ padding: '20px 24px' }}>
           <h3 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '20px' }}>
-            📊 Department-wise Attendance
+             Department-wise Attendance
           </h3>
           <div style={{ height: '280px' }}>
             <ResponsiveContainer width="100%" height="100%">
@@ -65,7 +65,7 @@ const AdminDashboard = () => {
         {/* Pie Chart */}
         <div className="glass-card" style={{ padding: '20px 24px' }}>
           <h3 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '20px' }}>
-            🎓 Student Distribution
+             Student Distribution
           </h3>
           <div style={{ height: '280px' }}>
             <ResponsiveContainer width="100%" height="100%">
@@ -84,7 +84,7 @@ const AdminDashboard = () => {
       {/* Faculty Overview from Firestore */}
       <div className="glass-card" style={{ padding: '20px 24px' }}>
         <h3 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '16px' }}>
-          👩‍🏫 Faculty Overview
+           Faculty Overview
         </h3>
         {loadingTeachers ? (
           <div style={{ padding: '20px', textAlign: 'center', color: 'var(--text-muted)' }}>Loading faculty…</div>

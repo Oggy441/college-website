@@ -26,7 +26,7 @@ const TeacherDashboard = () => {
   return (
     <div className="animate-fade-in" style={{ padding: '24px 28px' }}>
       <PageHeader
-        title={`Hello, ${user?.name?.split(' ').pop() || 'Professor'}! 👋`}
+        title={`Hello, ${user?.name?.split(' ').pop() || 'Professor'}! `}
         subtitle="Your class overview at a glance"
       />
 
@@ -41,7 +41,7 @@ const TeacherDashboard = () => {
         {/* Chart */}
         <div className="glass-card" style={{ padding: '20px 24px' }}>
           <h3 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '20px' }}>
-            📊 Students Enrolled Per Subject
+             Students Enrolled Per Subject
           </h3>
           <div style={{ height: '280px' }}>
             <ResponsiveContainer width="100%" height="100%">
@@ -61,7 +61,7 @@ const TeacherDashboard = () => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           {/* My Subjects */}
           <div className="glass-card" style={{ padding: '18px 22px' }}>
-            <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '14px' }}>📚 My Subjects</h4>
+            <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '14px' }}> My Subjects</h4>
             {loadingSubjects ? (
               <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Loading…</p>
             ) : mySubjects.length === 0 ? (
@@ -81,7 +81,7 @@ const TeacherDashboard = () => {
 
           {/* Recent Announcements */}
           <div className="glass-card" style={{ padding: '18px 22px' }}>
-            <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '14px' }}>📢 Recent Announcements</h4>
+            <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '14px' }}> Recent Announcements</h4>
             {latestAnnouncements.length === 0 ? (
               <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>No announcements.</p>
             ) : (
